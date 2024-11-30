@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Avengers Puzzle</title>
+        <style>
+            body {
+                font-family: Arial, Helvetica, sans-serif;
+                text-align: center;
+                width: 100%;
+                height: 120vh;
+                background: linear-gradient(135deg, rgb(202, 57, 238), rgb(30, 84, 164));
+            }
+
+            #board {
+                width: 400px;
+                height: 400px;
+                border: 2px solid rgb(147, 108, 147);
+                margin: 0 auto;
+                display: flex;
+                flex-wrap: wrap;
+            }
+
+            #board img {
+                width: 80px;
+                height: 80px;
+                border: 0.5px solid lightblue;
+                box-sizing: border-box;
+            }
+
+            #pieces {
+                width: 1040px;
+                height: 160px;
+                border: 2px solid purple;
+                margin: 20px auto;
+                display: flex;
+                flex-wrap: wrap;
+            }
+
+            #pieces img {
+                width: 80px;
+                height: 80px;
+                border: 0.5px solid lightblue;
+                box-sizing: border-box;
+            }
+
+            button {
+                width: 90px;
+                height: 40px;
+                border-radius: 20px;
+                outline: none;
+                border: none;
+                background-color: blueviolet;
+                color: white;
+            }
+
+            h1, h2 {
+                color: white;
+            }
+        </style>
+    </head>
+
+    <body>
+        <h1>Puzzle Game</h1>
+        
+        <div id="gameSection">
+            <br>
+            <div id="board"></div>
+            <h2>Turns: <span id="turns">0</span></h2>
+            <div id="pieces"></div>
+            <button id="ref">Rearrange</button>
+        </div>
+
+        <script>
+            var rows = 5;
+            var columns = 5;
+
+            var currTile;
+            var otherTile;
+
+            var turns = 0;
+
+            initializeGame();
+
+            function initializeGame() {
+                for (let r = 0; r < rows; r++) {
+                    for (let c = 0; c < columns; c++) {
+                        let tile = document.createElement("img");
+                        tile.src = "./images/blank.jpg";
+
+                        tile.addEventListener("dragstart", dragStart);
+                        tile.addEventListener("dragover", dragOver);
+                        tile.addEventListener("dragenter", dragEnter);
+                        tile.addEventListener("dragleave", dragLeave);
+                        tile.addEventListener("drop", dragDrop);
+                        tile.addEventListener("dragend", dragEnd);
+
+                        document.getElementById("board").append(tile);
+                    }
+                }
+
+                let pieces = [];
+                for (let i = 1; i <= rows * columns; i++) {
+                    pieces.push(i.toString());
+                }
+                pieces.reverse();
+
+                for (let i = 0; i < pieces.length; i++) {
+                    let j = Math.floor(Math.random() * pieces.length);
+
+                    let tmp = pieces[i];
+                    pieces[i] = pieces[j];
+                    pieces[j] = tmp;
+                }
+
+                for (let i = 0; i < pieces.length; i++) {
+                    let tile = document.createElement("img");
+                    tile.src = "./images/" + pieces[i] + ".jpg";
+
+                    tile.addEventListener("dragstart", dragStart);
+                    tile.addEventListener("dragover", dragOver);
+                    tile.addEventListener("dragenter", dragEnter);
+                    tile.addEventListener("dragleave", dragLeave);
+                    tile.addEventListener("drop", dragDrop);
+                    tile.addEventListener("dragend", dragEnd);
+
+                    document.getElementById("pieces").append(tile);
+                }
+                document.getElementById("ref").addEventListener("click", reload);
+            }
+
+            function reload() {
+                location.reload();
+            }
+
+            function dragStart() {
+                currTile = this;
+            }
+
+            function dragOver(e) {
+                e.preventDefault();
+            }
+
+            function dragEnter(e) {
+                e.preventDefault();
+            }
+
+            function dragLeave() {}
+
+            function dragDrop() {
+                otherTile = this;
+            }
+
+            function dragEnd() {
+                if (currTile.src.includes("blank")) {
+                    return;
+                }
+                let currImg = currTile.src;
+                let otherImg = otherTile.src;
+                currTile.src = otherImg;
+                otherTile.src = currImg;
+
+                turns += 1;
+                document.getElementById("turns").innerText = turns;
+
+                if (turns > 30) {
+                    alert("Turns exceeded the limit. Good luck, try again!");
+                    reload();
+                }
+            }
+        </script>
+    </body>
+</html>
